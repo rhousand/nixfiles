@@ -7,7 +7,10 @@
   home.homeDirectory = "/home/rhousand";
   home.packages = with pkgs; [
     btop
+    slack
+    firefox
     dig
+    zoom-us
   ];
   programs = {
     tmux = {
