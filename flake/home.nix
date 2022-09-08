@@ -7,7 +7,7 @@
   home.homeDirectory = "/home/rhousand";
   home.packages = with pkgs; [
     libsForQt5.neochat
-    vscode-fhs.all
+    vscode-fhs
     btop
     slack
     firefox
