@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./vboxHwConfig.nix
     ];
 
   # Bootloader.
@@ -34,9 +34,10 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
-  # Enable the Pantheon Desktop Environment.
+  # Enable the XFCE Desktop Environment.
   services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.pantheon.enable = true;
+  #services.xserver.desktopManager.pantheon.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -73,6 +74,9 @@
     description = "Ryan Housand";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
+      firefox
+      vim
+      git
     #  thunderbird
     ];
   };
@@ -83,10 +87,21 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    vim 
+    slack
+    wget
   ];
 
+  xdg = {
+    portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal-gtk
+      ];
+      gtkUsePortal = true;
+    };
+  };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -98,7 +113,8 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-   services.openssh.enable = true;
+  # services.openssh.enable = true;
+  services.flatpak.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -114,8 +130,11 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.05"; # Did you read the comment?
 
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = "experimental-features = nix-command flakes";
+
+  programs.zsh.enable = true;
+  programs.zsh.ohMyZsh = {
+    enable = true;
+    plugins = [ "git" "sudo" ];
   };
+
 }
