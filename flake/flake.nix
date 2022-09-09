@@ -35,7 +35,7 @@
       vbox = lib.nixosSystem {
         inherit system;
         modules = [ 
-          ./configuration.nix 
+          ./vboxConfig.nix 
           home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
