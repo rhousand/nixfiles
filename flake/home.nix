@@ -1,120 +1,117 @@
-{ config, pkgs, ... }:
-
+{ pkgs, ... }: 
 {
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
+  imports = [
+    ./modules/direnv.nix
+    ./modules/tmux.nix
+    ./modules/vim.nix
+    ./modules/zsh.nix
+    ./modules/darwin.nix
+#    ./modules/doom-emacs.nix
+  ];
   home.username = "rhousand";
-  home.homeDirectory = "/home/rhousand";
   home.packages = with pkgs; [
-    libsForQt5.neochat
-    vscode-fhs
+    automake
+    awscli2
+    bat
+    bitwarden-cli
+    bottom
     btop
-    slack
-    firefox
+    cloc
+    cmake
+    dbeaver
+    difftastic
     dig
-    zoom-us
+    docker
+    du-dust
+    dua
+    eza
+    fd
+    findutils
+    fzf
+    gitkraken
+    gnupg
+    go
+    heroku
+    ipcalc
+    ispell
+    iterm2
+    jq
+    go-task
+    libtool
+    libvterm-neovim
+    m-cli # Useful MacOS CLI commands
+    neofetch
+    nerd-font-patcher
+    nerdfonts
+    nmap
+    nodejs
+    notmuch
+    nvd  # Nix package version tool $ nvd diff /nix/var/nix/profiles/system-{14,15}-link
+    python39 # Needed for Treemacs
+    rename
+    ripgrep
+    sbcl # Lisp RPEL
+    silver-searcher # This is the ag command
+    ssm-session-manager-plugin
+    stow
+    syncthing
+    tealdeer  # tldr
+    tree
+    #vscode-with-extensions
+    #vscodium
+    #yabai
+    magic-wormhole
+    zip
+    zoxide
   ];
   programs = {
-    tmux = {
+    emacs = {
       enable = true;
-      terminal = "xterm-256color";
-      historyLimit = 406000;
-      prefix = "C-b";
-      baseIndex = 1;
-      shell = "${pkgs.zsh}/bin/zsh";
-      extraConfig = ''
-        source ${pkgs.python39Packages.powerline}/share/tmux/powerline.conf
-        setw -g xterm-keys on
-        set -sg repeat-time 600
-        set -s focus-events on
-        set -q -g status-utf8 on
-        setw -q -g utf8 on
-        setw -g automatic-rename on
-        set -g renumber-windows on
-        set -g set-titles on
-        set -g set-titles-string '#H:#S.#I.#P #W #T'
-        set -g display-panes-time 800
-        set -g display-time 1000
-        set -g status-interval 10
-        set -g visual-bell on
-        set -g bell-action any
-        setw -g monitor-activity on
-        set -g visual-activity on
-        bind - split-window -v
-        bind \\ split-window -h
-        bind C-f command-prompt -p find-session 'switch-client -t %%'
-        bind -r h select-pane -L  # move left
-        bind -r j select-pane -D  # move down
-        bind -r k select-pane -U  # move up
-        bind -r l select-pane -R  # move right
-        bind > swap-pane -D       # swap current pane with the next one
-        bind < swap-pane -U       # swap current pane with the previous one
-        bind -r H resize-pane -L 2
-        bind -r J resize-pane -D 2
-        bind -r K resize-pane -U 2
-        bind -r L resize-pane -R 2
-      '';
-    };
-    vim = {
-      enable = true;
-      plugins = with pkgs.vimPlugins; [ 
-        vim-airline 
-        vim-nix
+      package = pkgs.emacs29;
+      extraPackages = epkgs: [
+        epkgs.vterm
+        epkgs.slime
+        epkgs.consult
       ];
-      settings = { ignorecase = true; };
-      extraConfig = ''
-        set mouse=a
-        colorscheme desert
-        syntax on
-        colorscheme desert
-        set t_Co=256
-        " Return to last edit position when opening files (You want this!)
-        autocmd BufReadPost *
-             \ if line("'\"") > 0 && line("'\"") <= line("$") |
-             \   exe "normal! g`\"" |
-             \ endif
-
-        filetype plugin indent on
-        " On pressing tab, insert 2 spaces
-        set expandtab
-        " show existing tab with 2 spaces width
-        set tabstop=2
-        set softtabstop=2
-        " when indenting with '>', use 2 spaces width
-        set shiftwidth=2
-      '';
+      extraConfig = '' (setq standard-indent 2) '';
     };
-    zsh = {
+    neovim = {
+      defaultEditor = true;
       enable = true;
-      autocd = true;
-      enableAutosuggestions = true;
-      oh-my-zsh = {
-        enable = true;
-        theme = "robbyrussell";
-        extraConfig = ''
-          SHOW_AWS_PROMPT=true
-        '';
-        plugins = [
-          "git"
-          "sudo"
-          "docker"
-          "terraform"
-          "systemadmin"
-          "vi-mode"
-          "aws"
-        ];
-      };
+#      profiles.rhjun = {
+#
+#        bookmarks = [
+#          {
+#            name = "prod-pop";
+#            tags = [ "pop" "Prod" "Gladstone" ];
+#            keyword = "prod";
+#            url = "https://prod-pop.gladstone53.com/";
+#          }
+#        ];
+#      };
     };
     git = {
       enable = true;
       userName = "Ryan Housand";
       userEmail = "rhousand@gmail.com";
+      ignores = [
+        ".DS_Store"
+      ];
       aliases = {
         st = "status";
         cm = "commit -m";
+        aa = "add -A .";
+        br = "branch";
+        c = "commit -S";
+        ca = "commit -S --amend";
+        cb = "checkout -b";
+        co = "checkout";
+        d = "diff";
+        l = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
       };
     };
   };
+
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
   # when a new Home Manager release introduces backwards
@@ -123,7 +120,7 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
-  home.stateVersion = "22.05";
+  home.stateVersion = "23.11";
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

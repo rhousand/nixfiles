@@ -1,0 +1,29 @@
+{ lib, fetchzip, stdenvNoCC, ... }:
+
+stdenvNoCC.mkDerivation rec {
+  pname = "brave";
+  version = "1.57.47";
+  src = fetchzip {
+    url = "https://github.com/brave/brave-browser/releases/download/v${version}/brave-v${version}-darwin-x64.zip";
+    hash = "sha256-qVJBECeEeE6II/JnP1HHwX5bhiPJbSLow6EtCH8UuO4=";
+  };
+
+  dontConfigure = true;
+  dontBuild = true;
+  dontFixup = true;
+
+  installPhase = ''
+    runHook preInstall
+    APP_DIR="$out/Applications/Brave Browser.app"
+    mkdir -p "$APP_DIR"
+    mkdir -p "$out/bin"
+    ls -l
+    cp -r . "$APP_DIR"
+    cat << EOF > "$out/bin/brave"
+    #!${stdenvNoCC.shell}
+    open -na "$APP_DIR" --args "\$@"
+    EOF
+    chmod +x "$out/bin/brave"
+    runHook postInstall
+  '';
+}
